@@ -1,0 +1,5 @@
+django
+python
+Pillow
+pip install djangorestframework
+django-filter
