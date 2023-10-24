@@ -6,17 +6,17 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
   backend:
-    image: piejin/foodgram_backend:latest # Use your custom backend image
+    image: piejin/foodgram_backend:latest
     env_file: ../.env
     volumes:
       - static:/backend_static
       - media:/app/media
   frontend:
-    image: piejin/foodgram_frontend:latest # Use your custom frontend image
+    image: piejin/foodgram_frontend:latest
     volumes:
       - static:/app/build
   nginx:
-    image: piejin/foodgram_nginx:latest # Use your custom nginx image
+    image: piejin/foodgram_nginx:latest
     ports:
       - "80:80"
     volumes:
