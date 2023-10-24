@@ -1,38 +1,40 @@
 from django.urls import include, path
-from .views import TagGetView, IngredientGetView, RecipeView, RecipeFavoriteView, FollowView, TestView
 from rest_framework import routers
+
+from .views import (FavoriteViewSet, FollowViewSet, IngredientListView,
+                    RecipeViewSet, CartViewSet, TagViewSet,
+                    SelfUserViewSet)
 
 app_name = "api"
 
-v1_router = routers.DefaultRouter()
-
-
-v1_router.register(r'tags', TagGetView)
-v1_router.register(r'ingredients', IngredientGetView)
-v1_router.register(r'recipes', RecipeView)
-v1_router.register(
-    r'users/(?P<user_id>\d+)/subscribe',
-    FollowView,
-    basename='subscribe'
-    )
-v1_router.register(
-    r'users/subscriptions',
-    FollowView,
-    basename='subscriptions'
-)
-v1_router.register(
-    r'recipes/(?P<recipe_id>\d+)/favorite',
-    RecipeFavoriteView,
-    basename='favorite')
-v1_router.register(
-    r'recipes/(?P<recipe_id>\d+)/shopping_cart',
-    RecipeFavoriteView,
-    basename='shopping_cart')
-
+router = routers.DefaultRouter()
+router.register("tags", TagViewSet)
+router.register("ingredients", IngredientListView)
+router.register("recipes", RecipeViewSet)
 
 urlpatterns = [
     path("auth/", include("djoser.urls.authtoken")),
+    path("recipes/<int:id>/favorite/", FavoriteViewSet.as_view(actions={
+        'post': 'create',
+        'delete': 'destroy',
+    })),
+    path("recipes/download_shopping_cart/", CartViewSet.as_view(actions={
+        'get': 'retrieve',
+    })),
+    path("recipes/<int:id>/shopping_cart/", CartViewSet.as_view(actions={
+        'post': 'create',
+        'delete': 'destroy',
+    })),
+    path("users/subscriptions/", FollowViewSet.as_view(actions={
+        'get': 'list',
+    })),
+    path("users/me/", SelfUserViewSet.as_view(actions={
+        'get': 'retrieve',
+    })),
+    path("users/<int:id>/subscribe/", FollowViewSet.as_view(actions={
+        'post': 'create',
+        'delete': 'destroy',
+    })),
     path("", include("djoser.urls")),
-    path('', include(v1_router.urls),),
-    
+    path("", include(router.urls)),
 ]
