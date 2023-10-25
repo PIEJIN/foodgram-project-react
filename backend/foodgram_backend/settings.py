@@ -8,7 +8,7 @@ SECRET_KEY = config("SECRET_KEY", default="somekey")
 
 DEBUG = config("DEBUG_MODE", "False").lower() == "true"
 
-ALLOWED_HOSTS = ["localhost", "158.160.8.128", "127.0.0.1"] # временно
+ALLOWED_HOSTS = ["localhost", "158.160.8.128", "127.0.0.1"]  # временно
 
 INSTALLED_APPS = [
     "django.contrib.admin",

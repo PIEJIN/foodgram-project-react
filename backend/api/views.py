@@ -108,7 +108,7 @@ class CartViewSet(ModelViewSet):
         recipe = get_object_or_404(Recipe, id=id)
         queryset = ShoppingCart.objects.filter(
             user=request.user, recipe=recipe
-            )
+        )
         if queryset.exists():
             return Response(
                 {"errors": "Рецепт уже в корзине"},

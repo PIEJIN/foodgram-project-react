@@ -6,12 +6,12 @@ volumes:
 services:
   db:
     image: postgres:13.10
-    env_file: ../.env
+    env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data/
   backend:
     build: ../backend/
-    env_file: ../.env
+    env_file: .env
     volumes:
       - static:/backend_static/
       - media:/app/media
