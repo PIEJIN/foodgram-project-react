@@ -15,14 +15,14 @@ class User(AbstractUser):
     )
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'password']
+    REQUIRED_FIELDS = ["username", "first_name", "last_name", "password"]
 
     class Meta:
         ordering = ("username",)
         verbose_name = "Пользователь"
 
     def __str__(self):
-        return f'Пользователь {self.first_name}{self.last_name}'
+        return f"Пользователь {self.first_name}{self.last_name}"
 
 
 class Follow(models.Model):
@@ -43,6 +43,6 @@ class Follow(models.Model):
         verbose_name = "Подписка"
         constraints = (
             models.UniqueConstraint(
-                fields=['user', 'author'], name="follow_unique"
+                fields=["user", "author"], name="follow_unique"
             ),
         )

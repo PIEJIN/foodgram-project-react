@@ -15,25 +15,25 @@ router.register("recipes", RecipeViewSet)
 urlpatterns = [
     path("auth/", include("djoser.urls.authtoken")),
     path("recipes/<int:id>/favorite/", FavoriteViewSet.as_view(actions={
-        'post': 'create',
-        'delete': 'destroy',
+        "post": "create",
+        "delete": "destroy",
     })),
     path("recipes/download_shopping_cart/", CartViewSet.as_view(actions={
-        'get': 'retrieve',
+        "get": "retrieve",
     })),
     path("recipes/<int:id>/shopping_cart/", CartViewSet.as_view(actions={
-        'post': 'create',
-        'delete': 'destroy',
+        "post": "create",
+        "delete": "destroy",
     })),
     path("users/subscriptions/", FollowViewSet.as_view(actions={
-        'get': 'list',
+        "get": "list",
     })),
     path("users/me/", SelfUserViewSet.as_view(actions={
-        'get': 'retrieve',
+        "get": "retrieve",
     })),
     path("users/<int:id>/subscribe/", FollowViewSet.as_view(actions={
-        'post': 'create',
-        'delete': 'destroy',
+        "post": "create",
+        "delete": "destroy",
     })),
     path("", include("djoser.urls")),
     path("", include(router.urls)),

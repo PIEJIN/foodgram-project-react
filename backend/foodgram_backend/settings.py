@@ -4,11 +4,11 @@ from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY', default='somekey')
+SECRET_KEY = config("SECRET_KEY", default="somekey")
 
-DEBUG = config('DEBUG_MODE', 'False').lower() == 'true'
+DEBUG = config("DEBUG_MODE", "False").lower() == "true"
 
-ALLOWED_HOSTS = ['localhost', '158.160.8.128', '127.0.0.1'] # временно
+ALLOWED_HOSTS = ["localhost", "158.160.8.128", "127.0.0.1"] # временно
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -58,13 +58,13 @@ WSGI_APPLICATION = "foodgram_backend.wsgi.application"
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('POSTGRES_DB', 'django'),
-        'USER': config('POSTGRES_USER', 'django'),
-        'PASSWORD': config('POSTGRES_PASSWORD', ''),
-        'HOST': config('DB_HOST', ''),
-        'PORT': config('DB_PORT', 5432)
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config("POSTGRES_DB", "django"),
+        "USER": config("POSTGRES_USER", "django"),
+        "PASSWORD": config("POSTGRES_PASSWORD", ""),
+        "HOST": config("DB_HOST", ""),
+        "PORT": config("DB_PORT", 5432)
     }
 }
 

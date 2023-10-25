@@ -34,7 +34,7 @@ class IngredientListView(ReadOnlyModelViewSet):
     pagination_class = None
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [SearchFilter]
-    search_fields = ['name']
+    search_fields = ["name"]
 
     @classmethod
     def get_extra_actions(cls):
@@ -48,7 +48,7 @@ class RecipeViewSet(ModelViewSet):
     filterset_class = RecipeFilter
 
     def get_serializer_class(self):
-        if self.action in ['create', 'update']:
+        if self.action in ["create", "update"]:
             return RecipeCreateUpdateSerializer
         return RecipeSerializer
 
@@ -160,7 +160,7 @@ class FollowViewSet(ModelViewSet):
     serializer_class = FollowSerializer
 
     @action(
-        detail=False, methods=['get'], permission_classes=[IsAuthenticated]
+        detail=False, methods=["get"], permission_classes=[IsAuthenticated]
         )
     def list(self, request):
         queryset = Follow.objects.filter(user=request.user)
@@ -171,7 +171,7 @@ class FollowViewSet(ModelViewSet):
         return self.get_paginated_response(serializer.data)
 
     @action(
-        detail=True, methods=['post'], permission_classes=[IsAuthenticated]
+        detail=True, methods=["post"], permission_classes=[IsAuthenticated]
         )
     def create(self, request, id):
         user = get_object_or_404(User, id=id)
@@ -190,7 +190,7 @@ class FollowViewSet(ModelViewSet):
         return Response(serializer.data, status=HTTP_201_CREATED)
 
     @action(
-        detail=True, methods=['delete'], permission_classes=[IsAuthenticated]
+        detail=True, methods=["delete"], permission_classes=[IsAuthenticated]
         )
     def destroy(self, request, id):
         user = get_object_or_404(User, id=id)
