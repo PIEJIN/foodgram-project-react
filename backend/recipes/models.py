@@ -34,7 +34,7 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient, through="IngredientRecipe"
-        )
+    )
     name = models.CharField(max_length=150)
     image = models.ImageField()
     text = models.CharField(max_length=150)
