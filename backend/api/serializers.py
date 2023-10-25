@@ -28,7 +28,7 @@ class CustomUserSerializer(UserSerializer):
         request = self.context.get("request")
         if not request.user.is_authenticated or not Follow.objects.filter(
             user=request.user, author=obj
-                ).exists():
+        ).exists():
             return False
         return True
 
@@ -271,6 +271,6 @@ class FollowSerializer(ModelSerializer):
         request = self.context.get("request")
         if not request.user.is_authenticated or not Follow.objects.filter(
             user=request.user, author=obj.author
-                ).exists():
+        ).exists():
             return False
         return True

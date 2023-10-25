@@ -116,7 +116,7 @@ class CartViewSet(ModelViewSet):
             )
         instance = ShoppingCart.objects.create(
             user=request.user, recipe=recipe
-            )
+        )
         serializer = self.get_serializer(instance)
         return Response(serializer.data, status=HTTP_201_CREATED)
 
@@ -124,7 +124,7 @@ class CartViewSet(ModelViewSet):
         recipe = get_object_or_404(Recipe, id=id)
         queryset = ShoppingCart.objects.filter(
             user=request.user, recipe=recipe
-            )
+        )
         if queryset.exists():
             instance = queryset.first()
             instance.delete()
@@ -143,7 +143,7 @@ class CartViewSet(ModelViewSet):
             if ingredient_recipe.ingredient.name in shopping_cart:
                 shopping_cart[
                     ingredient_recipe.ingredient.name
-                    ][1] += ingredient_recipe.amount
+                ][1] += ingredient_recipe.amount
             else:
                 shopping_cart[ingredient_recipe.ingredient.name] = [
                     ingredient_recipe.ingredient.measurement_unit,
@@ -161,7 +161,7 @@ class FollowViewSet(ModelViewSet):
 
     @action(
         detail=False, methods=["get"], permission_classes=[IsAuthenticated]
-        )
+    )
     def list(self, request):
         queryset = Follow.objects.filter(user=request.user)
         page = self.paginate_queryset(queryset)
@@ -172,7 +172,7 @@ class FollowViewSet(ModelViewSet):
 
     @action(
         detail=True, methods=["post"], permission_classes=[IsAuthenticated]
-        )
+    )
     def create(self, request, id):
         user = get_object_or_404(User, id=id)
         if Follow.objects.filter(user=request.user, author=user).exists():
@@ -191,7 +191,7 @@ class FollowViewSet(ModelViewSet):
 
     @action(
         detail=True, methods=["delete"], permission_classes=[IsAuthenticated]
-        )
+    )
     def destroy(self, request, id):
         user = get_object_or_404(User, id=id)
         if Follow.objects.filter(user=request.user, author=user).exists():
