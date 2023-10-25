@@ -142,3 +142,9 @@ media/
 
 .vscode
 .env\
+frontend
+frontend/
+postman-collection/
+postman-collection
+cached data/
+cached data
