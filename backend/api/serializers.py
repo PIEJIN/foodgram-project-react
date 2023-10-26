@@ -1,13 +1,15 @@
 import base64
 
 from django.core.files.base import ContentFile
+
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                            ShoppingCart, Tag)
 from rest_framework.serializers import (ImageField, IntegerField,
                                         ModelSerializer,
                                         PrimaryKeyRelatedField, ReadOnlyField,
                                         SerializerMethodField, ValidationError)
+
+from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                            ShoppingCart, Tag)
 from users.models import Follow
 
 
@@ -157,16 +159,23 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
             ).save()
         return recipe
 
-    def update(self, instance, validated_data):
-        ingredients_data = validated_data.pop("ingredients")
-        recipe = super().update(instance, validated_data)
+    def save(self, **kwargs):
+        ingredients_data = self.validated_data.pop("ingredients")
+        instance = kwargs.get("instance")
 
-        IngredientRecipe.objects.filter(recipe=recipe).delete()
+        if instance is None:
+            # Создание
+            instance = Recipe.objects.create(**self.validated_data)
+        else:
+            # Обновление
+            for attr, value in self.validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
 
         ingredient_recipe_instances = [
             IngredientRecipe(
-                recipe=recipe,
-                ingredient=Ingredient.objects.get(id=ingredient_data["id"]),
+                recipe=instance,
+                ingredient=ingredient_data["ingredient"],
                 amount=ingredient_data["amount"],
             )
             for ingredient_data in ingredients_data
@@ -174,7 +183,7 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
 
         IngredientRecipe.objects.bulk_create(ingredient_recipe_instances)
 
-        return recipe
+        return instance
 
     def to_representation(self, instance):
         serializer = RecipeSerializer(
@@ -186,18 +195,21 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
         if not values:
             raise ValidationError("Добавьте ингредиенты.")
 
-        unique_ingredients = []
-        repeated_ingredients = []
+        unique_ingredient_ids = set()
+        repeated_ingredient_ids = set()
+
         for value in values:
             ingredient = value.get("ingredient")
-            if ingredient in unique_ingredients:
-                repeated_ingredients.append(ingredient)
+            if ingredient.id in unique_ingredient_ids:
+                repeated_ingredient_ids.add(ingredient.id)
             else:
-                unique_ingredients.append(ingredient)
+                unique_ingredient_ids.add(ingredient.id)
 
-        if repeated_ingredients:
+        if repeated_ingredient_ids:
+            repeated_ingredient_ids = map(str, repeated_ingredient_ids)
             raise ValidationError(
-                "Одинаковые инридиенты: {}".format(repeated_ingredients))
+                f"Одинаковые ингредиенты с ID:{repeated_ingredient_ids}"
+            )
 
         return values
 
@@ -207,7 +219,7 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
 
         unique_tags = set(values)
         if len(unique_tags) != len(values):
-            raise ValidationError("Диблирование тегов")
+            raise ValidationError("Дублирование тегов")
 
         return values
 
@@ -257,6 +269,29 @@ class FollowSerializer(ModelSerializer):
             "is_subscribed",
             "recipes",
         )
+
+    def create(self, validated_data):
+        request = self.context.get("request")
+        author = validated_data.get("author")
+
+        if Follow.objects.filter(user=request.user, author=author).exists():
+            raise ValidationError({"errors": "Вы уже подписаны"})
+        if request.user == author:
+            raise ValidationError({"errors": "Самоподписка запрещена"})
+
+        return Follow.objects.create(user=request.user, author=author)
+
+    def destroy(self, instance):
+        request = self.context.get("request")
+
+        if Follow.objects.filter(
+            user=request.user, author=instance.author
+        ).exists():
+            instance.delete()
+        else:
+            raise ValidationError(
+                {"errors": "У вас нет подписки на этого пользователя"}
+            )
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

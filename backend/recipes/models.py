@@ -12,6 +12,7 @@ class Tag(models.Model):
 
     class Meta:
         verbose_name = "Тег"
+        verbose_name_plural = "Тэги"
 
     def __str__(self):
         return self.name
@@ -20,6 +21,10 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(max_length=150)
     measurement_unit = models.CharField(max_length=150)
+    
+    class Meta:
+        verbose_name = "Ингредиент"
+        verbose_name_plural = "Ингредиенты"
 
     def __str__(self):
         return self.name
@@ -42,6 +47,7 @@ class Recipe(models.Model):
 
     class Meta:
         verbose_name = "Рецепт"
+        verbose_name_plural = "Рецепты"
         constraints = (
             models.UniqueConstraint(
                 fields=("name", "author"), name="unique_recipe"
@@ -70,15 +76,24 @@ class TagRecipe(models.Model):
 class IngredientRecipe(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
+        verbose_name="Ингредиент",
         related_name="ingredients_recipes",
         on_delete=models.CASCADE,
     )
     recipe = models.ForeignKey(
         Recipe,
+        verbose_name="Рецепт",
         related_name="ingredients_recipes",
         on_delete=models.CASCADE,
     )
     amount = models.IntegerField(validators=(MinValueValidator(1),))
+
+    constraints = (
+            models.UniqueConstraint(
+                fields=["ingredient", "recipe"],
+                name="recipe_ingredient_unique"
+            ),
+        )
 
 
 class Favorite(models.Model):
@@ -94,6 +109,11 @@ class Favorite(models.Model):
         related_name="favorite",
         on_delete=models.CASCADE,
     )
+    constraints = (
+            models.UniqueConstraint(
+                fields=["user", "recipe"], name="favorite_unique"
+            ),
+        )
 
 
 class ShoppingCart(models.Model):
@@ -109,3 +129,8 @@ class ShoppingCart(models.Model):
         related_name="cart",
         on_delete=models.CASCADE,
     )
+    constraints = (
+            models.UniqueConstraint(
+                fields=["user", "recipe"], name="cart_unique"
+            ),
+        )

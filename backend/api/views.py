@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
@@ -19,6 +18,7 @@ from .serializers import (CustomUserSerializer, FavoriteSerializer,
                           FollowSerializer, IngredientSerializer,
                           RecipeCreateUpdateSerializer, RecipeSerializer,
                           ShoppingCartSerializer, TagSerializer)
+from .utils import text_response
 
 
 class TagViewSet(ReadOnlyModelViewSet):
@@ -135,24 +135,10 @@ class CartViewSet(ModelViewSet):
         )
 
     def retrieve(self, request):
-        shopping_cart = {}
         ingredients_recipes = IngredientRecipe.objects.filter(
             recipe__cart__user=request.user
         )
-        for ingredient_recipe in ingredients_recipes:
-            if ingredient_recipe.ingredient.name in shopping_cart:
-                shopping_cart[
-                    ingredient_recipe.ingredient.name
-                ][1] += ingredient_recipe.amount
-            else:
-                shopping_cart[ingredient_recipe.ingredient.name] = [
-                    ingredient_recipe.ingredient.measurement_unit,
-                    ingredient_recipe.amount,
-                ]
-        content = ""
-        for ingredient, values in shopping_cart.items():
-            content += f"{ingredient} ({values[0]}) — {values[1]}\n"
-        return HttpResponse(content, content_type="text/plain")
+        return text_response(ingredients_recipes)
 
 
 class FollowViewSet(ModelViewSet):
@@ -175,16 +161,6 @@ class FollowViewSet(ModelViewSet):
     )
     def create(self, request, id):
         user = get_object_or_404(User, id=id)
-        if Follow.objects.filter(user=request.user, author=user).exists():
-            return Response(
-                {"errors": "Вы уже подписаны"},
-                status=HTTP_400_BAD_REQUEST,
-            )
-        if request.user == user:
-            return Response(
-                {"errors": "Самоподписка запрещена"},
-                status=HTTP_400_BAD_REQUEST,
-            )
         data = Follow.objects.create(user=request.user, author=user)
         serializer = FollowSerializer(data, context={"request": request})
         return Response(serializer.data, status=HTTP_201_CREATED)
@@ -194,13 +170,8 @@ class FollowViewSet(ModelViewSet):
     )
     def destroy(self, request, id):
         user = get_object_or_404(User, id=id)
-        if Follow.objects.filter(user=request.user, author=user).exists():
-            Follow.objects.get(user=request.user, author=user).delete()
-            return Response(status=HTTP_204_NO_CONTENT)
-        return Response(
-            {"errors": "У вас нет подписки на этого пользователя"},
-            status=HTTP_400_BAD_REQUEST,
-        )
+        Follow.objects.get(user=request.user, author=user).delete()
+        return Response(status=HTTP_204_NO_CONTENT)
 
 
 class SelfUserViewSet(ViewSet):
