@@ -21,7 +21,7 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(max_length=150)
     measurement_unit = models.CharField(max_length=150)
-    
+
     class Meta:
         verbose_name = "Ингредиент"
         verbose_name_plural = "Ингредиенты"
@@ -89,11 +89,11 @@ class IngredientRecipe(models.Model):
     amount = models.IntegerField(validators=(MinValueValidator(1),))
 
     constraints = (
-            models.UniqueConstraint(
-                fields=["ingredient", "recipe"],
-                name="recipe_ingredient_unique"
-            ),
-        )
+        models.UniqueConstraint(
+            fields=["ingredient", "recipe"],
+            name="recipe_ingredient_unique"
+        ),
+    )
 
 
 class Favorite(models.Model):
@@ -110,10 +110,10 @@ class Favorite(models.Model):
         on_delete=models.CASCADE,
     )
     constraints = (
-            models.UniqueConstraint(
-                fields=["user", "recipe"], name="favorite_unique"
-            ),
-        )
+        models.UniqueConstraint(
+            fields=["user", "recipe"], name="favorite_unique"
+        ),
+    )
 
 
 class ShoppingCart(models.Model):
@@ -130,7 +130,7 @@ class ShoppingCart(models.Model):
         on_delete=models.CASCADE,
     )
     constraints = (
-            models.UniqueConstraint(
-                fields=["user", "recipe"], name="cart_unique"
-            ),
-        )
+        models.UniqueConstraint(
+            fields=["user", "recipe"], name="cart_unique"
+        ),
+    )
