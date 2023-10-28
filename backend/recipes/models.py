@@ -42,8 +42,10 @@ class Recipe(models.Model):
     )
     name = models.CharField(max_length=150)
     image = models.ImageField()
-    text = models.CharField(max_length=150)
-    cooking_time = models.IntegerField(validators=(MinValueValidator(1),))
+    text = models.TextField()
+    cooking_time = models.PositiveIntegerField(
+        validators=(MinValueValidator(1),)
+    )
 
     class Meta:
         verbose_name = "Рецепт"
@@ -86,7 +88,7 @@ class IngredientRecipe(models.Model):
         related_name="ingredients_recipes",
         on_delete=models.CASCADE,
     )
-    amount = models.IntegerField(validators=(MinValueValidator(1),))
+    amount = models.PositiveIntegerField(validators=(MinValueValidator(1),))
 
     constraints = (
         models.UniqueConstraint(

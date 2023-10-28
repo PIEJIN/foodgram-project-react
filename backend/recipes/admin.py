@@ -10,11 +10,17 @@ class IngredientRecipeInline(admin.TabularInline):
     min_num = 1
 
 
+class TagRecipeInline(admin.TabularInline):
+    model = TagRecipe
+    extra = 1
+    min_num = 1
+
+
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ("name", "author", "favorite_count")
     search_fields = ("name", "author__email", "tags")
     list_filter = ("author", "tags")
-    inlines = [IngredientRecipeInline]
+    inlines = [IngredientRecipeInline, TagRecipeInline]
 
     def favorite_count(self, obj):
         return Favorite.objects.filter(recipe=obj).count()
@@ -30,7 +36,6 @@ class TagAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ("name", "measurement_unit")
     search_fields = ("name",)
-    list_filter = ("name",)
 
 
 class FavoriteAdmin(admin.ModelAdmin):

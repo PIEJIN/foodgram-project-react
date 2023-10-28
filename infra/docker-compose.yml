@@ -3,6 +3,7 @@ volumes:
   pg_data:
   static:
   media:
+  data:
 services:
   db:
     image: postgres:13.10
@@ -15,6 +16,7 @@ services:
     volumes:
       - static:/backend_static/
       - media:/app/media
+      - ../data:/app/data
   frontend:
     build:
       context: ../frontend

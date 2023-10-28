@@ -1,24 +1,30 @@
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                            ShoppingCart, Tag)
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import (
+    IsAuthenticated, IsAuthenticatedOrReadOnly
+)
 from rest_framework.response import Response
-from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
-                                   HTTP_400_BAD_REQUEST)
+from rest_framework.status import (
+    HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+)
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, ViewSet
-from users.models import Follow, User
 
+from recipes.models import (
+    Favorite, Ingredient, IngredientRecipe, Recipe, ShoppingCart, Tag
+)
+from users.models import Follow, User
 from .filters import RecipeFilter
 from .permissions import IsAuthorPatchDelete
-from .serializers import (CustomUserSerializer, FavoriteSerializer,
-                          FollowSerializer, IngredientSerializer,
-                          RecipeCreateUpdateSerializer, RecipeSerializer,
-                          ShoppingCartSerializer, TagSerializer)
-from .utils import text_response
+from .serializers import (
+    CustomUserSerializer, FavoriteSerializer, FollowSerializer,
+    IngredientSerializer, RecipeCreateUpdateSerializer, RecipeSerializer,
+    ShoppingCartSerializer, TagSerializer
+)
+from .utils import all_ingredients_in_text
 
 
 class TagViewSet(ReadOnlyModelViewSet):
@@ -34,11 +40,7 @@ class IngredientListView(ReadOnlyModelViewSet):
     pagination_class = None
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [SearchFilter]
-    search_fields = ["name"]
-
-    @classmethod
-    def get_extra_actions(cls):
-        return []
+    search_fields = ["^name"]
 
 
 class RecipeViewSet(ModelViewSet):
@@ -138,7 +140,8 @@ class CartViewSet(ModelViewSet):
         ingredients_recipes = IngredientRecipe.objects.filter(
             recipe__cart__user=request.user
         )
-        return text_response(ingredients_recipes)
+        content = all_ingredients_in_text(ingredients_recipes)
+        return HttpResponse(content, content_type="text/plain")
 
 
 class FollowViewSet(ModelViewSet):

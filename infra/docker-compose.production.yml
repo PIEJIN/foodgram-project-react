@@ -11,6 +11,7 @@ services:
     volumes:
       - static:/backend_static
       - media:/app/media
+      - ../data:/app/data
   frontend:
     image: piejin/foodgram_frontend:latest
     volumes:
@@ -30,3 +31,4 @@ volumes:
   pg_data:
   static:
   media:
+  data:
