@@ -43,7 +43,6 @@ class Recipe(models.Model):
     name = models.CharField(max_length=150)
     image = models.ImageField()
     text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     cooking_time = models.PositiveIntegerField(
         validators=[MinValueValidator(1)],
         error_messages={
@@ -52,7 +51,7 @@ class Recipe(models.Model):
     )
 
     class Meta:
-        ordering = ("-created_at",)
+        ordering = ("-id",)
         verbose_name = "Рецепт"
         verbose_name_plural = "Рецепты"
         constraints = (
