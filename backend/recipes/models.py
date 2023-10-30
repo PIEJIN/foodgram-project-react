@@ -43,7 +43,7 @@ class Recipe(models.Model):
     name = models.CharField(max_length=150)
     image = models.ImageField()
     text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     cooking_time = models.PositiveIntegerField(
         validators=[MinValueValidator(1)],
         error_messages={
