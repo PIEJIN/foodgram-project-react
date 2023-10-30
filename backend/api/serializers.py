@@ -201,11 +201,22 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
     def validate_ingredients(self, values):
         if not values:
             raise ValidationError("Добавьте ингредиенты.")
-        unique_ingredients = set()
+        unique_ids = set()
+        all_ids = []
         for value in values:
-            unique_ingredients.add(value['id'])
+            ingredient_id = value['ingredient'].id
+            unique_ids.add(ingredient_id)
+            all_ids.append(ingredient_id)
 
-        if len(unique_ingredients) != len(values):
+            amount = value['amount']
+            if not (isinstance(amount, (float, int))):
+                raise ValidationError("Вес ингредиента должен быть числом")
+            if int(amount) < 0:
+                raise ValidationError(
+                    "Вес ингредиента должен быть положительным числом"
+                )
+
+        if len(unique_ids) != len(all_ids):
             raise ValidationError("Одинаковые ингредиенты")
 
         return values
