@@ -235,14 +235,6 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
         if Recipe.objects.filter(name=value).exists():
             raise ValidationError("Имя занято")
         return value
-    
-    def validate_cooking_time(self, value):
-        if not (isinstance(value, (float, int))):
-            raise ValidationError("Время приготовления должно быть числом")
-        if int(value) < 0:
-            raise ValidationError(
-                "Время приготовления должено быть положительным числом"
-            )
 
 
 class FollowRecipeSerializer(ModelSerializer):
