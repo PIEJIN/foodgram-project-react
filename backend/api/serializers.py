@@ -233,8 +233,15 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
 
     def validate_name(self, value):
         if Recipe.objects.filter(name=value).exists():
-            raise ValidationError("Имя занято")
+            raise ValidationError("Имя рецепта занято")
         return value
+
+    def validate(self, attrs):
+        if self.initial_data.get("ingredients") == []:
+            raise ValidationError("Добавьте ингредиенты.")
+        if self.initial_data.get("tags") == []:
+            raise ValidationError("Добавьте теги.")
+        return attrs
 
 
 class FollowRecipeSerializer(ModelSerializer):
