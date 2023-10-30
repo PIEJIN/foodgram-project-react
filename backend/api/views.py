@@ -7,6 +7,7 @@ from rest_framework.filters import SearchFilter
 from rest_framework.permissions import (
     IsAuthenticated, IsAuthenticatedOrReadOnly
 )
+from rest_framework.serializers import ValidationError
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
@@ -55,7 +56,11 @@ class RecipeViewSet(ModelViewSet):
         return RecipeSerializer
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        try:
+            serializer.is_valid(raise_exception=True)
+            serializer.save(author=self.request.user)
+        except ValidationError as e:
+            return Response({"errors": e.detail}, status=HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
         instance = get_object_or_404(self.queryset, pk=pk)
