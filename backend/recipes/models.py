@@ -93,12 +93,7 @@ class IngredientRecipe(models.Model):
         related_name="ingredients_recipes",
         on_delete=models.CASCADE,
     )
-    amount = models.PositiveIntegerField(
-        validators=[MinValueValidator(1)],
-        error_messages={
-            'min_value': 'Значение должно быть больше 0.',
-        }
-    )
+    amount = models.PositiveIntegerField()
 
     constraints = (
         models.UniqueConstraint(
