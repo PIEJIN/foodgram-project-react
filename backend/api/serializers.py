@@ -77,6 +77,7 @@ class IngredientRecipeSerializer(ModelSerializer):
         fields = ("id", "name", "measurement_unit", "amount")
 
     def validate_amount(self, value):
+        print(value)
         if not value.isdigit():
             raise ValidationError(
                 "Вес ингредиента должен быть числом."
