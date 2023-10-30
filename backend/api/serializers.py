@@ -201,7 +201,9 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
     def validate_ingredients(self, values):
         if not values:
             raise ValidationError("Добавьте ингредиенты.")
+        print("________________________________________________________")
         print(values)
+        print("________________________________________________________")
         unique_ingredients = set(values)
 
         if len(unique_ingredients) != len(values):
