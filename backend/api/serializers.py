@@ -159,7 +159,6 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
             "image",
             "text",
             "cooking_time",
-
         )
 
     def create(self, validated_data):
@@ -198,50 +197,42 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
         )
         return serializer.data
 
-    def validate_ingredients(self, values):
-        if not values:
-            raise ValidationError("Добавьте ингредиенты.")
-        unique_ids = set()
-        all_ids = []
-        for value in values:
-            ingredient_id = value['ingredient'].id
-            unique_ids.add(ingredient_id)
-            all_ids.append(ingredient_id)
+    def validate(self, data):
+        ingredients = data.get("ingredients")
 
-            amount = value['amount']
-            if not (isinstance(amount, (float, int))):
-                raise ValidationError("Вес ингредиента должен быть числом")
+        if not ingredients:
+            raise ValidationError({"ingredients": ["Добавьте ингредиенты."]})
+
+        unique_ingredient_ids = set()
+        all_ingredient_ids = []
+
+        for ingredient_data in ingredients:
+            ingredient_id = ingredient_data.get("ingredient").id
+            unique_ingredient_ids.add(ingredient_id)
+            all_ingredient_ids.append(ingredient_id)
+
+            amount = ingredient_data.get("amount")
+            if not isinstance(amount, (float, int)):
+                raise ValidationError({"ingredients": ["Вес ингредиента должен быть числом"]})
             if int(amount) < 0:
-                raise ValidationError(
-                    "Вес ингредиента должен быть положительным числом"
-                )
+                raise ValidationError({"ingredients": ["Вес ингредиента должен быть положительным числом"]})
 
-        if len(unique_ids) != len(all_ids):
-            raise ValidationError("Одинаковые ингредиенты")
+        if len(unique_ingredient_ids) != len(all_ingredient_ids):
+            raise ValidationError({"ingredients": ["Одинаковые ингредиенты"]})
 
-        return values
+        tags = data.get("tags")
+        if not tags:
+            raise ValidationError({"tags": ["Укажите хотя бы 1 тег"]})
 
-    def validate_tags(self, values):
-        if not values:
-            raise ValidationError("Укажите хотя бы 1 тег")
+        unique_tags = set(tags)
+        if len(unique_tags) != len(tags):
+            raise ValidationError({"tags": ["Дублирование тегов"]})
 
-        unique_tags = set(values)
-        if len(unique_tags) != len(values):
-            raise ValidationError("Дублирование тегов")
+        name = data.get("name")
+        if Recipe.objects.filter(name=name).exists():
+            raise ValidationError({"name": ["Имя рецепта занято"]})
 
-        return values
-
-    def validate_name(self, value):
-        if Recipe.objects.filter(name=value).exists():
-            raise ValidationError("Имя рецепта занято")
-        return value
-
-    def validate(self, attrs):
-        if self.initial_data.get("ingredients") == []:
-            raise ValidationError("Добавьте ингредиенты.")
-        if self.initial_data.get("tags") == []:
-            raise ValidationError("Добавьте теги.")
-        return attrs
+        return data
 
 
 class FollowRecipeSerializer(ModelSerializer):
