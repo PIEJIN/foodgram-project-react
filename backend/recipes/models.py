@@ -43,11 +43,16 @@ class Recipe(models.Model):
     name = models.CharField(max_length=150)
     image = models.ImageField()
     text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
     cooking_time = models.PositiveIntegerField(
-        validators=(MinValueValidator(1),)
+        validators=[MinValueValidator(1)],
+        error_messages={
+            'min_value': 'Значение должно быть больше 0.',
+        }
     )
 
     class Meta:
+        ordering = ("-created_at",)
         verbose_name = "Рецепт"
         verbose_name_plural = "Рецепты"
         constraints = (
@@ -88,7 +93,12 @@ class IngredientRecipe(models.Model):
         related_name="ingredients_recipes",
         on_delete=models.CASCADE,
     )
-    amount = models.PositiveIntegerField(validators=(MinValueValidator(1),))
+    amount = models.PositiveIntegerField(
+        validators=[MinValueValidator(1)],
+        error_messages={
+            'min_value': 'Значение должно быть больше 0.',
+        }
+    )
 
     constraints = (
         models.UniqueConstraint(

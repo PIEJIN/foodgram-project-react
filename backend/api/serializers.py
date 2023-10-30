@@ -126,7 +126,10 @@ class RecipeSerializer(ModelSerializer):
 
 
 class IngredientRecipeCreateSerializer(ModelSerializer):
-    id = IntegerField()
+    id = PrimaryKeyRelatedField(
+        source="ingredient",
+        queryset=Ingredient.objects.all()
+    )
     amount = IntegerField()
 
     class Meta:
@@ -196,15 +199,14 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
 
         unique_ingredients = set()
         repeated_ingredients = set()
-
         for value in values:
-            ingredient = value.get("ingredient")
+
+            ingredient = value.get("id")
             if ingredient in unique_ingredients:
                 repeated_ingredients.add(ingredient)
             else:
                 unique_ingredients.add(ingredient)
-
-        if repeated_ingredients:
+        if len(repeated_ingredients) > 1:
             raise ValidationError("Одинаковые ингредиенты")
 
         return values
@@ -277,7 +279,8 @@ class FollowSerializer(ModelSerializer):
 
         return Follow.objects.create(user=request.user, author=author)
 
-    def destroy(self, instance):
+    def destroy(self, instance, validated_data):
+        print(validated_data)
         request = self.context.get("request")
 
         if Follow.objects.filter(

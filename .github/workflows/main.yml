@@ -51,8 +51,14 @@ jobs:
           sudo docker compose -f docker-compose.production.yml pull
           sudo docker compose -f docker-compose.production.yml down
           sudo docker compose -f docker-compose.production.yml up -d
+          sudo docker compose -f docker-compose.production.yml exec backend python manage.py makemigrations users
+          sudo docker compose -f docker-compose.production.yml exec backend python manage.py makemigrations recipes
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py makemigrations
+          sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate users zero
+          sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate recipes zero
+          sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate users
+          sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate recipes
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
           sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/
-          sudo docker compose -f docker-compose.yml exec backend python manage.py create_ingredients
+          sudo docker compose -f docker-compose.production.yml exec backend python manage.py create_ingredients
