@@ -211,17 +211,13 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
             for index, ingredient_data in enumerate(ingredients):
                 ingredient_id = ingredient_data.get("ingredient").id
                 if ingredient_id in unique_ingredient_ids:
-                    if "ingredients" not in errors:
-                        errors["ingredients"] = []
-                    errors["ingredients"].append(f"Дублирование ингредиентов в строке {index + 1}.")
-                unique_ingredient_ids.add(ingredient_id)
-                all_ingredient_ids.append(ingredient_id)
+                    unique_ingredient_ids.add(ingredient_id)
+                    all_ingredient_ids.append(ingredient_id)
 
                 amount = ingredient_data.get("amount")
                 if not isinstance(amount, (float, int)) or int(amount) < 0:
                     if "ingredients" not in errors:
-                        errors["ingredients"] = []
-                    errors["ingredients"].append(f"В строке {index + 1}: Вес ингредиента должен быть положительным числом.")
+                        errors["ingredients"] = ["Вес ингредиента должен быть положительным числом."]
 
         tags = data.get("tags")
         if not tags:
