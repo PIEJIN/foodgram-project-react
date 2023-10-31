@@ -94,12 +94,12 @@ class IngredientRecipe(models.Model):
     )
     amount = models.PositiveIntegerField()
 
-    constraints = (
-        models.UniqueConstraint(
-            fields=["ingredient", "recipe"],
-            name="recipe_ingredient_unique"
-        ),
-    )
+    # constraints = (
+    #     models.UniqueConstraint(
+    #         fields=["ingredient", "recipe"],
+    #         name="recipe_ingredient_unique"
+    #     ),
+    # )
 
 
 class Favorite(models.Model):
