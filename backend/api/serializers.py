@@ -210,9 +210,9 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
             for ingredient_data in ingredients:
                 ingredient_id = ingredient_data.get("ingredient").id
                 all_ingredient_ids.append(ingredient_id)
-                amount = ingredient_data.get("amount")
-                if amount <= 0:
-                    errors["amount"] = ["Вес должен быть положительным"]
+                # amount = ingredient_data.get("amount")
+                # if amount <= 0:
+                #     errors["amount"] = ["Вес должен быть положительным"]
             if len(all_ingredient_ids) != len(set(all_ingredient_ids)):
                 errors["ingredients"] = ["Одинаковые ингредиенты."]
 
