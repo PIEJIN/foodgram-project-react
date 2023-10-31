@@ -205,19 +205,16 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
         if not ingredients:
             errors["ingredients"] = ["Добавьте ингредиенты."]
         else:
-            unique_ingredient_ids = set()
             all_ingredient_ids = []
 
-            for index, ingredient_data in enumerate(ingredients):
+            for ingredient_data in ingredients:
                 ingredient_id = ingredient_data.get("ingredient").id
-                if ingredient_id in unique_ingredient_ids:
-                    unique_ingredient_ids.add(ingredient_id)
-                    all_ingredient_ids.append(ingredient_id)
-
+                all_ingredient_ids.append(ingredient_id)
                 amount = ingredient_data.get("amount")
-                if not isinstance(amount, (float, int)) or int(amount) < 0:
-                    if "ingredients" not in errors:
-                        errors["ingredients"] = ["Вес ингредиента должен быть положительным числом."]
+                if amount <= 0:
+                    errors["amount"] = ["Вес должен быть положительным"]
+            if len(all_ingredient_ids) != len(set(all_ingredient_ids)):
+                errors["ingredients"] = ["Одинаковые ингредиенты."]
 
         tags = data.get("tags")
         if not tags:
