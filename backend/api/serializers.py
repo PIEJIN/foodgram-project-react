@@ -199,37 +199,38 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
         return serializer.data
 
     def validate(self, data):
-        errors = {}
+        error_messages = []
 
         ingredients = data.get("ingredients")
         if not ingredients:
-            errors["ingredients"] = ["Добавьте ингредиенты."]
+            error_messages.append("Добавьте ингредиенты.")
         else:
             all_ingredient_ids = []
 
             for ingredient_data in ingredients:
                 ingredient_id = ingredient_data.get("ingredient").id
                 all_ingredient_ids.append(ingredient_id)
-                # amount = ingredient_data.get("amount")
-                # if amount <= 0:
-                #     errors["amount"] = ["Вес должен быть положительным"]
+                amount = ingredient_data.get("amount")
+                if amount <= 0:
+                    error_messages.append("Вес должен быть положительным")
             if len(all_ingredient_ids) != len(set(all_ingredient_ids)):
-                errors["ingredients"] = ["Одинаковые ингредиенты."]
+                error_messages.append("Одинаковые ингредиенты.")
 
         tags = data.get("tags")
         if not tags:
-            errors["tags"] = ["Укажите хотя бы 1 тег"]
+            error_messages.append("Укажите хотя бы 1 тег")
         elif len(tags) != len(set(tags)):
-            errors["tags"] = ["Дублирование тегов"]
+            error_messages.append("Дублирование тегов")
 
         name = data.get("name")
         if Recipe.objects.filter(name=name).exists():
-            errors["name"] = ["Имя рецепта занято"]
+            error_messages.append("Имя рецепта занято")
 
-        if errors:
-            raise ValidationError(errors)
+        if error_messages:
+            raise ValidationError(error_messages)
 
         return data
+
 
 
 class FollowRecipeSerializer(ModelSerializer):
