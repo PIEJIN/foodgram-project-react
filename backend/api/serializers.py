@@ -214,7 +214,7 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
                 if amount <= 0:
                     error_messages.append("Вес должен быть положительным")
             if len(all_ingredient_ids) != len(set(all_ingredient_ids)):
-                error_messages.append("Одинаковые ингредиенты.")
+                error_messages.append("Одинаковые ингредиенты")
 
         tags = data.get("tags")
         if not tags:
@@ -230,7 +230,6 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
             raise ValidationError(error_messages)
 
         return data
-
 
 
 class FollowRecipeSerializer(ModelSerializer):
